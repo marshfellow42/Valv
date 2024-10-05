@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 10
     needs: [run-unit-tests]
     # Check if the actor is Dependabot and the previous job was successful
-    if: ${{ github.actor == 'dependabot' && success() }}
+    if: ${{ github.actor == 'dependabot' || github.actor == 'dependabot[bot]' && success() }}
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
