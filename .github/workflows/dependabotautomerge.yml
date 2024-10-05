@@ -28,8 +28,7 @@ jobs:
 
   auto-merge-dependabot:
     name: Auto Merge Dependabot PRs
-    timeout-minutes: 10
-    needs: [run-unit-tests]
+    needs: run-unit-tests
     if: ${{ github.actor == 'dependabot[bot]' && success() }}
     runs-on: ubuntu-latest
     permissions:
@@ -42,3 +41,21 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           target: any
           merge-method: rebase
+
+  close-failed-dependabot:
+    name: Close Failed Dependabot PRs
+    needs: run-unit-tests
+    if: ${{ github.actor == 'dependabot[bot]' && !success() }}
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - name: Close PR
+        run: gh pr close "$NUMBER" --comment "$COMMENT"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.number }}
+          COMMENT: >
+            This pull request was closed due to the unit tests failing.
