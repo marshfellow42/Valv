@@ -30,7 +30,8 @@ jobs:
     name: Auto Merge Dependabot PRs
     timeout-minutes: 10
     needs: [run-unit-tests]
-    if: ${{ github.actor == 'dependabot[bot]' }}
+    # Check if the actor is Dependabot and the previous job was successful
+    if: ${{ github.actor == 'dependabot' && success() }}
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
